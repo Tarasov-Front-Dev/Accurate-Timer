@@ -1,6 +1,7 @@
 const inputEl = document.querySelector('input');
-const buttonEl = document.querySelector('button');
+const buttonEl = document.querySelector('.start-button');
 const timerEl = document.querySelector('span');
+const resetButton = document.querySelector('.reset-button')
 
 // Напишите реализацию createTimerAnimator
 // который будет анимировать timerEl
@@ -8,13 +9,9 @@ const createTimerAnimator = () => {
   return (seconds) => {
     if (Number.isInteger(parseInt(timerEl.innerHTML))) return
 
-    const endTime = Date.now() + seconds * 1000
-    const timer = () => {
-      if ((endTime - Date.now()) < 0) {
-        timerEl.innerHTML = 'hh:mm:ss'
-        return
-      }
+    const endTime = Date.now() + seconds * 1000 + 1000
 
+    const timer = () => {
       const sec = Math.floor((endTime - Date.now()) / 1000)
       
       const h = addZero(Math.floor(sec / 3600))
@@ -28,9 +25,25 @@ const createTimerAnimator = () => {
       }
   
       timerEl.innerHTML = `${h}:${m}:${s}`
-      setTimeout(timer, 100)
     }
-    setTimeout(timer, 100)
+    setTimeout(timer)
+
+    const timerId = setInterval(() => {      
+      if ((endTime - Date.now()) < 0) {
+        clearInterval(timerId)
+        timerEl.innerHTML = 'hh:mm:ss'
+        return
+      }
+      timer()
+    }, 100)
+
+    const resetClickHandler = () => {
+      clearInterval(timerId)
+      timerEl.innerHTML = 'hh:mm:ss'
+      resetButton.removeEventListener('click', resetClickHandler)
+    }
+
+    resetButton.addEventListener('click', resetClickHandler)
   }
 }
 
